@@ -1,0 +1,23 @@
+On average everything is good.
+
+Three examples from each figure.
+
+in the majority of case the single criteria optimization is better
+
+--------------------------------
+
+In online problem one issue is we do not know what's going to happen in future. Also, In various exploration and navigation problems, the issue is how to obtain the goal (search for a missing child, reach the beach, leave Buckingham palace blindfolded, etc.) while traversing the terrain efficiently with- out a map.
+Also, because of distributive setting, all information may not be available.
+Because decisions have to be made under uncertainty, and because we con- sider a worst case measure, good algorithms with respect to the competitive ratio seem indecisive. Certainly, such algorithms seem to procrastinate before making any decision which is difficult to repair if it proves to be wrong. In the famous k-server problem, algorithms with good competitive ratios will move multiple servers to an active area only after a great length of time, even if no other ac- tivity takes place. However, we note that a misunderstanding of the worst case measure can lead to difficulties. Back to the 3rd century B.C., Hannibal did leave behind in Spain a great many forces in expectation of a possible Roman land- ing. This is an example of a (wrong) decision motivated by a misunderstanding of competitive analysis. Because of the winner-take-all nature of the conflict, a better understanding of competitive analysis might have led Hannibal to move all his troops across the Alps or to decide not to attack Rome at all.
+Approximation algorithms are limited in the computational resources available whereas competitive algorithms are limited in their knowledge of the problem instance.
+
+From last paragraph of page 5, chapter 1
+---------------------------------
+
+Our generative model:
+Figure 1
+The eps_n is defined for every n, we can assume they are independent:
+
+
+
+
