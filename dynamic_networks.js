@@ -216,6 +216,65 @@ function neighborhood_preservation()
   }
 }
 
+function gabriel_force()
+{
+  window.simulation.alpha(1).restart();
+  var nodes = window.simulation.nodes();
+  var links = window.simulation.force("link").links();
+  var force_weight = 5.0;
+  for(var i=0;i<links.length;i++)
+  {
+    var cur_link = links[i]
+    //console.log(cur_link)
+    var u = nodes[cur_link.source.index]
+    var v = nodes[cur_link.target.index]
+    var center_vector = [(u.x+v.x)/2, (u.y+v.y)/2]
+    var rad = euclid_dis(u,v)/2
+    for(var j=0;j<nodes.length;j++)
+    {
+      var cur_node = nodes[j]
+      if((cur_node.index==u.index)||(cur_node.index==v.index))continue
+      if(euclid_dis(cur_node, {x:center_vector[0], y:center_vector[1]})<rad)
+      {
+        cur_node.vx += force_weight*(cur_node.x-center_vector[0])
+        cur_node.vy += force_weight*(cur_node.y-center_vector[1])
+      }
+    }
+  }
+}
+
+function stress_force()
+{
+  window.simulation.alpha(1).restart();
+  var nodes = window.simulation.nodes();
+  var links = window.simulation.force("link").links();
+  var force_weight = .0001
+  for(var i=0;i<nodes.length;i++)
+  {
+    var u = nodes[i]
+    var sum_x = 0
+    var sum_y = 0
+    for(var j=0;j<nodes.length;j++)
+    //for(var j=0;j<i;j++)
+    {
+      if(i!=j)
+      {
+        var v = nodes[j]
+        var dis = euclid_dis(u, v)
+        var graph_dis = window.G_json["graph_distnce"][u.index+""][v.index+""]
+        //var w = 1/(graph_dis*graph_dis)
+        var w = 1/graph_dis
+        sum_x += force_weight*2*w*(dis - graph_dis)*(u.x-v.x)/dis
+        sum_y += force_weight*2*w*(dis - graph_dis)*(u.y-v.y)/dis
+      }
+    }
+    console.log("sum_x", sum_x)
+    console.log("sum_y", sum_y)
+    u.vx += sum_x
+    u.vy += sum_y
+  }
+}
+
 function set_view_size()
 {
   d3.select("div.float-child").style("width", width+50);
@@ -244,6 +303,7 @@ function draw()
     all_edges.push({source_label:edge[0], target_label:edge[1]});
   }*/
   var G_json = JSON.parse(txt)
+  window.G_json = G_json;
   var number_of_nodes = G_json["edges"].length+1;
   // check if number of nodes is correct
   var node_set = new Set();
@@ -309,7 +369,8 @@ function draw()
   var stability = rev_scale(parseInt(document.getElementById("myRange").value));
 
   var manyBody = d3.forceManyBody().strength(-50 * stability);
-  var forceLink = d3.forceLink().strength(stability);
+  //var forceLink = d3.forceLink().strength(stability);
+  var forceLink = d3.forceLink().strength(0);
   //var forceLink = d3.forceLink();
   var center = d3.forceCenter().x(width/2).y(height/2);
 
@@ -317,8 +378,8 @@ function draw()
   var collision_radius = collide_scale(parseInt(document.getElementById("collideRange").value));
 
   var simulation = d3.forceSimulation()
-   .force("charge", manyBody)
-   .force("center", center)
+   //.force("charge", manyBody)
+   //.force("center", center)
    .force("link", forceLink)
    //.force("collision", d3.forceCollide(collision_radius))
    .nodes(nodes)
@@ -373,6 +434,8 @@ function draw()
   function updateNetwork() {
    var a = height*area_weight/2;
    box_force(width/2 - a, width/2 + a, height/2 - a, height/2 + a,  5);
+
+   stress_force()
 
    //angular_res_force(window.simulation.nodes())
 
